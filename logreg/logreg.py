@@ -100,6 +100,10 @@ class LogReg:
 
         # TODO: Implement updates in this function
 
+        pi = sigmoid(self.beta.dot(train_example.x))
+        for ii in range(len(self.beta)):
+        	self.beta[ii] = self.beta[ii] + (self.step(train_example.x[ii]) * (train_example.y - pi) * train_example.x[ii])
+
         return self.beta
 
 
