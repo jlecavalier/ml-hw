@@ -12,6 +12,7 @@ class TestKnn(unittest.TestCase):
         self.logreg_reg = LogReg(5, 0.25, lambda x: 1.0)
 
     def test_reg(self):
+    	#print("\nREGULARIZED:\n")
         print(self.logreg_reg.beta)
         print(kPOS.x)
         beta = self.logreg_reg.sg_update(kPOS, 0)
@@ -21,8 +22,8 @@ class TestKnn(unittest.TestCase):
         self.assertAlmostEqual(beta[3], 0.25)
         self.assertAlmostEqual(beta[4], 0.0)
 
-        print(self.logreg_reg.beta)
-        print(kPOS.x)
+        #print(self.logreg_reg.beta)
+        #print(kPOS.x)
         beta = self.logreg_reg.sg_update(kNEG, 1)
         self.assertAlmostEqual(beta[0], -0.30097640098415529)
         self.assertAlmostEqual(beta[1], 1.0)
@@ -31,6 +32,7 @@ class TestKnn(unittest.TestCase):
         self.assertAlmostEqual(beta[4], -0.85195280196831058)
 
     def test_unreg(self):
+    	#print("\nUNREGULARIZED:\n\n")
         print(self.logreg_unreg.beta)
         print(kPOS.x)
         beta = self.logreg_unreg.sg_update(kPOS, 0)

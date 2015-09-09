@@ -97,13 +97,23 @@ class LogReg:
         :param use_tfidf: A boolean to switch between the raw data and the tfidf representation
         :return: Return the new value of the regression coefficients
         """
-
         # TODO: Implement updates in this function
-
         pi = sigmoid(self.beta.dot(train_example.x))
-        for ii in range(len(self.beta)):
-        	self.beta[ii] = self.beta[ii] + (self.step(train_example.x[ii]) * (train_example.y - pi) * train_example.x[ii])
 
+        #print("BEFORE UPDATE ON ITER %d: " % iteration)
+        #print(self.beta)
+
+        for ii in range(len(self.beta)):
+        	if train_example.x[ii] == 0:
+        		self.last_update[ii] = self.last_update[ii] + 1
+        	else:
+        		self.beta[ii] = self.beta[ii] + self.step(iteration) * ((train_example.y - pi) * train_example.x[ii])
+        		self.beta[ii] = self.beta[ii] * (1 - (2 * self.step(iteration) * self.mu)) ** (self.last_update[ii] + 1)
+        		self.last_update[ii] = 0
+
+        #print("AFTER UPDATE ON ITER %d: " % iteration)
+        #print(self.beta)
+        #print("\n")
         return self.beta
 
 
