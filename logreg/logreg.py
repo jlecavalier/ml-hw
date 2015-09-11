@@ -1,4 +1,9 @@
+################
+#JAY LECAVALIER#
+################
+
 import random
+import heapq
 from numpy import zeros, sign
 from math import exp, log
 from collections import defaultdict
@@ -187,3 +192,22 @@ if __name__ == "__main__":
                 ho_lp, ho_acc = lr.progress(test)
                 print("Update %i\tTP %f\tHP %f\tTA %f\tHA %f" %
                       (update_number, train_lp, ho_lp, train_acc, ho_acc))
+                #print("%f" % ho_acc)
+    print("BEST PREDICTOR WORDS FOR BASEBALL ARTICLE (starting with best):")
+    m = heapq.nlargest(3, lr.beta)
+    for x in m:
+    	print([vocab[i] for i, j in enumerate(lr.beta) if j == x])
+
+    print("BEST PREDICTOR WORDS FOR HOCKEY ARTICLE (starting with best)")
+    m = heapq.nsmallest(3, lr.beta)
+    for x in m:
+    	print([vocab[i] for i, j in enumerate(lr.beta) if j == x])
+
+    print("WORST PREDICTOR WORDS:")
+    beta_abs = lr.beta
+    for ii in range(len(beta_abs)-1):
+    	beta_abs[ii] = abs(beta_abs[ii])
+    m = heapq.nsmallest(1, beta_abs)
+    for x in m:
+    	print(x)
+    	print([vocab[i] for i, j in enumerate(beta_abs) if j == x])
