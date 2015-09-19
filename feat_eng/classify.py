@@ -1,3 +1,5 @@
+__author__ = "Jay LeCavalier"
+
 import argparse
 from csv import DictReader, DictWriter
 
@@ -10,14 +12,16 @@ from sklearn.linear_model import SGDClassifier
 
 kTARGET_FIELD = 'spoiler'
 kTEXT_FIELD = 'sentence'
+kTROPE_FIELD = 'trope'
 
 
 class Featurizer:
-    def __init__(self,mingram,maxgram):
-        self.vectorizer = CountVectorizer(analyzer="word", ngram_range=(mingram,maxgram))
+    def __init__(self,mingram,maxgram,mindf):
+        self.vectorizer = CountVectorizer(analyzer="word", ngram_range=(mingram,maxgram),
+        	                              stop_words=['trope','sentence'], min_df=mindf)
 
     def train_feature(self, examples):
-        return self.vectorizer.fit_transform(examples)
+    	return self.vectorizer.fit_transform(examples)
 
     def test_feature(self, examples):
         return self.vectorizer.transform(examples)
@@ -38,20 +42,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--min', help='minimum n-gram size', type=int, default=1, required=False)
     parser.add_argument('--max', help='maximum n-gram size', type=int, default=1, required=False)
+    parser.add_argument('--mindf', help='minimum document frequency', type=int, default=1, required=False)
     args = parser.parse_args()
 
     # Cast to list to keep it all in memory
     train = list(DictReader(open("../data/spoilers/train.csv", 'r')))
     test = list(DictReader(open("../data/spoilers/test.csv", 'r')))
 
-    feat = Featurizer(args.min,args.max)
+    feat = Featurizer(args.min,args.max,args.mindf)
 
     labels = []
     for line in train:
         if not line[kTARGET_FIELD] in labels:
             labels.append(line[kTARGET_FIELD])
 
+    for x in train:
+    	x[kTEXT_FIELD] = " ".join([x[kTEXT_FIELD], x[kTROPE_FIELD]])
+
+    for x in test:
+    	x[kTEXT_FIELD] = " ".join([x[kTEXT_FIELD], x[kTROPE_FIELD]])
+
     print("Label set: %s" % str(labels))
+
     x_train = feat.train_feature(x[kTEXT_FIELD] for x in train)
     x_test = feat.test_feature(x[kTEXT_FIELD] for x in test)
 
