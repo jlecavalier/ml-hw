@@ -2,13 +2,14 @@ from random import randint, seed
 from collections import defaultdict
 from math import atan, sin, cos, pi
 
+from itertools import combinations
+
 from numpy import array
 from numpy.linalg import norm
 
 from bst import BST
 
 kSIMPLE_DATA = [(1., 1.), (2., 2.), (3., 0.), (4., 2.)]
-
 
 class Classifier:
     def correlation(self, data, labels):
@@ -185,9 +186,32 @@ def axis_aligned_hypotheses(dataset):
     Args:
       dataset: The dataset to use to generate hypotheses
     """
+    # Make a rectangle that contains no data points
+    yield AxisAlignedRectangle(float('inf'),float('inf'),float('inf'),float('inf'))
+    to_yield = []
+    # Add all rectangles containing just one point
+    for ii in dataset:
+        to_yield.append(AxisAlignedRectangle(ii[0],ii[1],ii[0],ii[1]))
 
-    # TODO: complete this function
-    yield AxisAlignedRectangle(0, 0, 0, 0)
+    for n in range(2,len(dataset)+1):
+        potentials = combinations(dataset,n)
+        for ii in potentials:
+            p_x = []
+            p_y = []
+            for jj in ii:
+                p_x.append(jj[0])
+                p_y.append(jj[1])
+            rect = AxisAlignedRectangle(min(p_x),min(p_y),max(p_x),max(p_y))
+            pcount = 0
+            for kk in dataset:
+                if rect.classify(kk):
+                    pcount = pcount + 1
+            if pcount == n:
+                if rect not in to_yield:
+                    to_yield.append(rect)
+    
+    for r in to_yield:
+        yield r
 
 
 def coin_tosses(number, random_seed=0):
