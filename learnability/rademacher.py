@@ -1,6 +1,6 @@
 from random import randint, seed
 from collections import defaultdict
-from math import atan, sin, cos, pi
+import math
 
 from itertools import combinations
 
@@ -28,8 +28,13 @@ class Classifier:
 
         assert all(x == 1 or x == -1 for x in labels), "Labels must be binary"
 
-        # TODO: implement this function
-        return 0.0
+        sigma = coin_tosses(len(data))
+
+        bigsum = 0.0
+        for i in range(len(data)):
+        	bigsum += float(labels[i]) * float(classify_to_int(self.classify(data[i])))
+
+        return (bigsum/float(len(data)))
 
 
 class PlaneHypothesis(Classifier):
@@ -128,6 +133,11 @@ class ConstantClassifier(Classifier):
     def classify(self, point):
         return True
 
+def classify_to_int(value):
+	if value:
+		return 1
+	else:
+		return -1
 
 def constant_hypotheses(dataset):
     """
@@ -156,7 +166,19 @@ def origin_plane_hypotheses(dataset):
 
     # TODO: Complete this function
 
-    yield OriginPlaneHypothesis(1.0, 0.0)
+    yielded = []
+
+    for ii in dataset:
+      	r = math.hypot(ii[0],ii[1])
+      	theta = math.acos(ii[0]/r)
+      	x = math.cos(theta-math.pi/2)
+      	y = math.sin(theta-math.pi/2)
+      	if ((x,y) not in yielded):
+      		yielded.append((x,y))
+
+    for ret in yielded:
+    	yield OriginPlaneHypothesis(ret[0], ret[1])
+    	yield OriginPlaneHypothesis(-ret[0], -ret[1])
 
 def plane_hypotheses(dataset):
     """
@@ -244,9 +266,17 @@ def rademacher_estimate(dataset, hypothesis_generator, num_samples=500,
       num_samples: the number of samples to use in estimating the Rademacher
       correlation
     """
-
-    # TODO: complete this function
-    return 0.0
+    maxes=[]
+    for i in range(num_samples):
+    	correlations = []
+    	if i == 0:
+    		sigma = coin_tosses(len(dataset),random_seed)
+    	else:
+    		sigma = coin_tosses(len(dataset))
+    	for kk in hypothesis_generator(1):
+    		correlations.append(kk.correlation(dataset,sigma))
+    	maxes.append(max(correlations))
+    return sum(maxes)/len(maxes)
 
 if __name__ == "__main__":
     print("Rademacher correlation of constant classifier %f" %
