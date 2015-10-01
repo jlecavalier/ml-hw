@@ -9,7 +9,7 @@ from numpy.linalg import norm
 
 from bst import BST
 
-kSIMPLE_DATA = [(1., 1.), (2., 2.), (3., 0.), (4., 2.)]
+kSIMPLE_DATA = [(1, 1), (2, 2), (3, 0), (4, 2)]
 
 class Classifier:
     def correlation(self, data, labels):
@@ -273,15 +273,12 @@ def rademacher_estimate(dataset, hypothesis_generator, num_samples=500,
     		sigma = coin_tosses(len(dataset),random_seed)
     	else:
     		sigma = coin_tosses(len(dataset))
-    	for kk in hypothesis_generator(1):
+    	for kk in hypothesis_generator(dataset):
     		correlations.append(kk.correlation(dataset,sigma))
     	maxes.append(max(correlations))
     return sum(maxes)/len(maxes)
 
 if __name__ == "__main__":
-    print("Rademacher correlation of constant classifier %f" %
-          rademacher_estimate(kSIMPLE_DATA, constant_hypotheses))
-    print("Rademacher correlation of rectangle classifier %f" %
-          rademacher_estimate(kSIMPLE_DATA, axis_aligned_hypotheses))
-    print("Rademacher correlation of plane classifier %f" %
-          rademacher_estimate(kSIMPLE_DATA, origin_plane_hypotheses))
+	print("Rademacher correlation of constant classifier %f" % rademacher_estimate(kSIMPLE_DATA, constant_hypotheses))
+	print("Rademacher correlation of rectangle classifier %f" % rademacher_estimate(kSIMPLE_DATA, axis_aligned_hypotheses))
+	print("Rademacher correlation of plane classifier %f" % rademacher_estimate(kSIMPLE_DATA, origin_plane_hypotheses))
