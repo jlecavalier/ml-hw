@@ -166,19 +166,48 @@ def origin_plane_hypotheses(dataset):
 
     # TODO: Complete this function
 
-    yielded = []
+    classified = []
+    angles = []
 
+    # collect all the angles of all the points from the x-axis:
     for ii in dataset:
       	r = math.hypot(ii[0],ii[1])
-      	theta = math.acos(ii[0]/r)
-      	x = math.cos(theta-math.pi/2)
-      	y = math.sin(theta-math.pi/2)
-      	if ((x,y) not in yielded):
-      		yielded.append((x,y))
+      	if r not in angles:
+      		if r == 0:
+      			angles.append(0)
+      		else:
+      			angles.append(math.acos(ii[0]/r))
 
-    for ret in yielded:
-    	yield OriginPlaneHypothesis(ret[0], ret[1])
-    	yield OriginPlaneHypothesis(-ret[0], -ret[1])
+    # We are going to bisect angles that are close to one another.
+    angles.sort()
+
+    # Add first two classifiers.
+    theta = angles[0]
+    x = math.cos(theta)
+    y = math.sin(theta)
+    h1 = OriginPlaneHypothesis(x,y)
+    h2 = OriginPlaneHypothesis(-x,-y)
+    classified.append([h1.classify(x) for x in dataset])
+    classified.append([h2.classify(x) for x in dataset])
+    yield h1
+    yield h2
+
+    for i in range(len(angles)-1):
+    	# Bisect the two closest angles to one another
+    	theta = (angles[i]+angles[i+1])/2 + math.pi/2
+      	x = math.cos(theta)
+      	y = math.sin(theta)
+      	h1 = OriginPlaneHypothesis(x,y)
+      	h2 = OriginPlaneHypothesis(-x,-y)
+      	c1 = [h1.classify(x) for x in dataset]
+      	c2 = [h2.classify(x) for x in dataset]
+      	# Add the vector to the yield pile if it's not already in there.
+      	if (c1 not in classified):
+      		classified.append(c1)
+      		yield h1
+      	if (c2 not in classified):
+      		classified.append(c2)
+      		yield h2
 
 def plane_hypotheses(dataset):
     """
