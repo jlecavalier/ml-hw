@@ -64,7 +64,7 @@ def train_sin_classifier(data):
     for ii in data:
     	if not ii[1]:
     		bigsum += 2.0**(ii[0])
-    frequency = 1.0 + bigsum
+    frequency = 1 + bigsum
     return SinClassifier(frequency * pi)
 
 if __name__ == "__main__":
