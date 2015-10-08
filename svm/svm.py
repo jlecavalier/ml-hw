@@ -38,8 +38,10 @@ def find_support(x, y, w, b, tolerance=0.001):
     support = set()
     for i in range(len(x)):
     	p = w.dot(array(x[i])) + b
+    	# x[i] is a support vector on the positive side
     	if p <= 1 + tolerance and p >= 1 - tolerance:
     		support.add(i)
+    	# x[i] is a support vector on the negative side
     	if p >= -1 - tolerance and p <= -1 + tolerance:
     		support.add(i)
 
@@ -53,5 +55,14 @@ def find_slack(x, y, w, b):
     """
 
     slack = set()
-    # TODO: IMPLEMENT THIS FUNCTION
+    for i in range(len(x)):
+    	# If p >= 1, then p should be in the positive class.
+    	# If p <= 1, then p should be in the negative class.
+    	p = w.dot(array(x[i])) + b
+    	# x[i] was classified as positive, but it's really negative.
+    	if p >= 1 and y[i] < 0:
+    		slack.add(i)
+    	# x[i] was classified as negative, but it's really positive.
+    	if p <= -1 and y[i] > 0:
+    		slack.add(i)
     return slack
