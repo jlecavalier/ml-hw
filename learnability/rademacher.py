@@ -244,7 +244,7 @@ def axis_aligned_hypotheses(dataset):
     for ii in dataset:
         to_yield.append(AxisAlignedRectangle(ii[0],ii[1],ii[0],ii[1]))
 
-    for n in range(2,len(dataset)+1):
+    for n in range(2,5):
         potentials = combinations(dataset,n)
         for ii in potentials:
             p_x = []

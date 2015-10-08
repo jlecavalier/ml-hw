@@ -36,7 +36,13 @@ def find_support(x, y, w, b, tolerance=0.001):
     """
 
     support = set()
-    # TODO: IMPLEMENT THIS FUNCTION
+    for i in range(len(x)):
+    	p = w.dot(array(x[i])) + b
+    	if p <= 1 + tolerance and p >= 1 - tolerance:
+    		support.add(i)
+    	if p >= -1 - tolerance and p <= -1 + tolerance:
+    		support.add(i)
+
     return support
 
 
